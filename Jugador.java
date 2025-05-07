@@ -1,7 +1,15 @@
-public class Jugador {
-    private String nombre;
-    private int puntos;
+import java.io.Serializable;
 
-    public int getPuntos() {return puntos;}
-    public void setPuntos(int puntos) {this.puntos = puntos;}
+public class Jugador implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String nombre;
+    private Tablero tablero;
+
+    public Jugador(String nombre, Tablero tablero) {
+        this.nombre = nombre;
+        this.tablero = tablero;
+    }
+
+    public String getNombre() { return nombre; }
+    public Tablero getTablero() { return tablero; }
 }
