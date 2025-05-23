@@ -1,3 +1,12 @@
+/**
+ * La clase Jugador contiene el nombre y tablero del jugador.
+ * Representa a cada participante en el juego, almacenando su información
+ * y su estado de juego.
+ *
+ * @author (AYJB)
+ * @version (ABR 2025)
+ */
+
 import java.io.Serializable;
 
 public class Jugador implements Serializable {
@@ -12,4 +21,5 @@ public class Jugador implements Serializable {
 
     public String getNombre() { return nombre; }
     public Tablero getTablero() { return tablero; }
+
 }
