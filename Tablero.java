@@ -1,16 +1,23 @@
-import java.io.Serializable;
+/**
+ * Colocación de barcos,
+ * recepción de ataques, y evaluación de victoria.
+ *
+ * @author (AYJB)
+ * @version (ABR 2025)
+ */
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Tablero implements Serializable {
     private static final long serialVersionUID = 1L;
-    private int[][][] tablero;       // [0]=barcos, [1]=ataques
-    private ArrayList<Barco> barcos; // gestion de barcos
+    private int[][][] tablero;
+    private ArrayList<Barco> barcos; // barquitoOs
 
     public Tablero() {
         this.tablero = new int[2][14][14];
-        // Inicializar todo en 0 usando Arrays.fill
         for (int capa = 0; capa < 2; capa++) {
             for (int f = 0; f < 14; f++) {
                 Arrays.fill(tablero[capa][f], 0);
@@ -21,7 +28,7 @@ public class Tablero implements Serializable {
 
     public void colocarBarcos() {
         Scanner sc = new Scanner(System.in);
-        int[] tamaños = {3, 4, 5}; // solo 3 barcos
+        int[] tamaños = {3, 4, 4, 5, 5, 6}; // depende del tamaño genera los BARCOOS 3, 4, 4, 5, 5, 6
         for (int i = 0; i < tamaños.length; i++) {
             boolean colocado = false;
             while (!colocado) {
@@ -89,29 +96,31 @@ public class Tablero implements Serializable {
             System.out.printf(i<10?" %d ":"%d ", i);
             for (int j=0; j<14; j++) {
                 int v = tablero[capa][i][j];
-                char c = ' ';
+                String c;
                 switch(v) {
-                    case 5: c='🚢'; break;
-                    case 8: c='🔥'; break;
-                    case 9: c='O'; break;
-                    default: c='🌊';
+                    case 5: c = "🚢"; break;
+                    case 8: c = "🔥"; break;
+                    case 9: c = " O";  break;
+                    default: c = "🌊";
                 }
-                System.out.print(c+" ");
+                System.out.print(c + " ");
             }
             System.out.println();
         }
     }
 
-    public boolean recibirAtaque(int fila, int columna) {
-        if (tablero[0][fila][columna] == 5) {
-            tablero[0][fila][columna] = 8;
+    public boolean recibirAtaque(int fila, int col) {
+        // Se verifica en la capa 0 (barcos propios)
+        if (tablero[0][fila][col] == 5) {
+            tablero[0][fila][col] = 8; // Marcar como impactado
             return true;
         }
         return false;
     }
 
-    public void registrarAtaque(int fila, int columna, boolean acierto) {
-        tablero[1][fila][columna] = acierto ? 8 : 9;
+    public void registrarAtaque(int fila, int col, boolean impacto) {
+        // Se registra en la capa 1 (ataques)
+        tablero[1][fila][col] = impacto ? 8 : 9;
     }
 
     public boolean todosLosBarcosDestruidos() {
@@ -121,5 +130,27 @@ public class Tablero implements Serializable {
             }
         }
         return true;
+    }
+
+    public static void guardarPartida(Jugador[] jugadores, String filename) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
+            out.writeObject(jugadores);
+            System.out.println("✅ Partida guardada automáticamente.");
+        } catch (IOException e) {
+            System.out.println("❌ Error al guardar la partida.");
+        }
+    }
+
+    public int[][][] getTablero() {
+        return tablero;
+    }
+
+    public static Jugador[] cargarPartida(String archivo) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(archivo))) {
+            return (Jugador[]) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("❌ No se pudo cargar la partida: " + e.getMessage());
+            return null;
+        }
     }
 }
